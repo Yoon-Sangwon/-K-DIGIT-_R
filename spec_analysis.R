@@ -43,3 +43,11 @@ summary(aov(activity ~ quantile, data = spec))
 summary(aov(spec_index ~ quantile, data = spec))
 
 
+ggplot(data = spec, aes(x = sales, y = spec_index)) + geom_point() + stat_smooth(col = "red") + coord_cartesian(xlim=c(0, 100000000000))
+ggplot(data = spec, aes(x = sales, y = achieve)) + geom_point() + stat_smooth() + coord_cartesian(ylim=c(0, 100000000000))
+ggplot(data = spec, aes(x = sales, y = language)) + geom_point() + stat_smooth() + coord_cartesian(xlim=c(0, 100000000000))
+ggplot(data = spec, aes(x = sales, y = activity)) + geom_point() + stat_smooth() + coord_cartesian(xlim=c(0, 100000000000))
+ggplot(data = spec, aes(x = sales, y = skill)) + geom_point() + stat_smooth() + coord_cartesian(xlim=c(0, 100000000000))
+
+
+spec.lm <- lm(sales ~ achieve + language + activity + skill, data = spec)
