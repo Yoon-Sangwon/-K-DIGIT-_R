@@ -15,24 +15,36 @@ summary(spec$sales)
 head(spec)
 
 length(spec$sales)
-spec <- spec %>% mutate(quantile = ifelse(sales > 500000000000, "3q",
-                                          ifelse(sales > 150000000000, "2q", "1q")))
+spec <- spec %>% mutate(quantile = ifelse(sales > 500000000000, "q3",
+                                          ifelse(sales > 150000000000, "q2", "q1")))
+spec <- spec %>% mutate(매출액 = ifelse(sales > 500000000000, "매출액 5000억 이상",
+                                          ifelse(sales > 150000000000, "매출액 5000 미만, 1500억 이상", "매출액 1500억 미만")))
+par(mar = c(10, 0, 10, 5))
+ggplot(data = spec, aes(x = 매출액, y = spec_index, fill = 매출액)) + geom_boxplot() +
+  labs(x = "매출액", y = "스펙지수", title = "매출액별 합격자 스펙지수의 분포") +
+  theme(axis.title = element_text(size = 15), title = element_text(size = 20))
+ggsave(filename = "spec_index.png")
 
-ggplot(data = spec, aes(x = quantile, y = spec_index, fill = quantile)) + geom_boxplot() +
-  labs(x = "매출액", y = "스펙지수", title = "매출액별 합격자 스펙지수의 분포")
+ggplot(data = spec, aes(x = 매출액, y = achieve, fill = 매출액)) + geom_boxplot() +
+  labs(x = "매출액", y = "학업성취도", title = "매출액별 합격자 학업 성취도의 분포") +
+  theme(axis.title = element_text(size = 15), title = element_text(size = 20))
+ggsave(filename = "achieve.png")
 
-ggplot(data = spec, aes(x = quantile, y = achieve, fill = quantile)) + geom_boxplot() +
-  labs(x = "매출액", y = "학업성취도", title = "매출액별 합격자 학업 성취도의 분포")
-
-ggplot(data = spec, aes(x = quantile, y = language, fill = quantile)) + geom_boxplot() +
+ggplot(data = spec, aes(x = 매출액, y = language, fill = 매출액)) + geom_boxplot() +
   labs(x = "매출액", y = "외국어", title = "매출액별 합격자 외국어 능력의 분포") +
-  coord_cartesian(ylim=c(4, 10))
+  coord_cartesian(ylim=c(4, 10)) +
+  theme(axis.title = element_text(size = 15), title = element_text(size = 20))
+ggsave(filename = "language.png")
 
-ggplot(data = spec, aes(x = quantile, y = skill, fill = quantile)) + geom_boxplot() +
-  labs(x = "매출액", y = "전문능력", title = "매출액별 합격자 전문능력의 분포")
+ggplot(data = spec, aes(x = 매출액, y = skill, fill = 매출액)) + geom_boxplot() +
+  labs(x = "매출액", y = "전문능력", title = "매출액별 합격자 전문능력의 분포") +
+  theme(axis.title = element_text(size = 15), title = element_text(size = 20))
+ggsave(filename = "skill.png")
 
-ggplot(data = spec, aes(x = quantile, y = activity, fill = quantile)) + geom_boxplot() +
-  labs(x = "매출액", y = "대외활동", title = "매출액별 합격자 대외활동의 분포")
+ggplot(data = spec, aes(x = 매출액, y = activity, fill = 매출액)) + geom_boxplot() +
+  labs(x = "매출액", y = "대외활동", title = "매출액별 합격자 대외활동의 분포") +
+  theme(axis.title = element_text(size = 15), title = element_text(size = 20))
+ggsave(filename = "activity.png")
 
 str(spec$quantile)
 spec$quantile <- as.factor(spec$quantile)
@@ -70,8 +82,8 @@ names(q3_df) <- c("스펙지수", "학업성취도", "외국어", "전문능력"
 names(q2_df) <- c("스펙지수", "학업성취도", "외국어", "전문능력", "대외활동")
 names(q1_df) <- c("스펙지수", "학업성취도", "외국어", "전문능력", "대외활동")
 
-?par
-par(mfrow = c(1,3), mar = c(5, 2, 5, 2))
+# ?par
+par(mfrow = c(1,3), mar = c(5, 1, 5, 1))
 radarchart(q1_df,
            pcol='lightcoral',             # 다각형 선의 색 
            pfcol=rgb(1, 0.5, 0.5, 0.5),  # 다각형 내부 색
@@ -79,12 +91,12 @@ radarchart(q1_df,
            cglcol='darkgrey',                # 거미줄의 색
            cglty=1,                      # 거미줄의 타입
            cglwd=0.8,                    # 거미줄의 두께
-           axistype=2,                   # 축의 레이블 타입
+           axistype = 2,                   # 축의 레이블 타입
            seg = 4,                        # 축의 눈금 분할                         
-           axislabcol = 'black',            # 축의 레이블 색
-           caxislabels = seq(0,10,2.5),    # 축의 레이블 값
-           paxislabels = c(300, 10, 10, 10, 5), 
+           axislabcol = 'black',         # 축의 레이블 색
+           vlcex = 1.1,
            title = "매출액 500억 미만")
+
 radarchart(q2_df,
            pcol='mediumaquamarine',             # 다각형 선의 색 
            pfcol=rgb(0.5, 1, 0.5, 0.5),  # 다각형 내부 색
@@ -95,9 +107,9 @@ radarchart(q2_df,
            axistype=2,                   # 축의 레이블 타입
            seg = 4,                        # 축의 눈금 분할                         
            axislabcol = 'black',            # 축의 레이블 색
-           caxislabels = seq(0,10,2.5),    # 축의 레이블 값
-           paxislabels = c(300, 10, 10, 10, 5), 
+           vlcex = 1.1,
            title = "매출액 1500억 이상 5000억 미만",)
+
 radarchart(q3_df,
            pcol='lightslateblue',             # 다각형 선의 색 
            pfcol=rgb(0.5, 0.5, 1, 0.5),  # 다각형 내부 색
@@ -108,8 +120,7 @@ radarchart(q3_df,
            axistype=2,                   # 축의 레이블 타입
            seg = 4,                        # 축의 눈금 분할                         
            axislabcol = 'black',            # 축의 레이블 색
-           caxislabels = seq(0,10,2.5),    # 축의 레이블 값
-           paxislabels = c(300, 10, 10, 10, 5), 
+           vlcex = 1.1,
            title = "매출액 5000억 이상",)
 ?radarchart
 
