@@ -24,14 +24,14 @@ ggplot(data = spec, aes(x = quantile, y = achieve, fill = quantile)) + geom_boxp
   labs(x = "매출액", y = "학업성취도", title = "매출액별 합격자 학업 성취도의 분포")
 
 ggplot(data = spec, aes(x = quantile, y = language, fill = quantile)) + geom_boxplot() +
-  labs(x = "매출액", y = "외국어", title = "매출액별 합격자 외국어 능력의 분포")
+  labs(x = "매출액", y = "외국어", title = "매출액별 합격자 외국어 능력의 분포") +
+  coord_cartesian(ylim=c(4, 10))
 
 ggplot(data = spec, aes(x = quantile, y = skill, fill = quantile)) + geom_boxplot() +
   labs(x = "매출액", y = "전문능력", title = "매출액별 합격자 전문능력의 분포")
 
 ggplot(data = spec, aes(x = quantile, y = activity, fill = quantile)) + geom_boxplot() +
   labs(x = "매출액", y = "대외활동", title = "매출액별 합격자 대외활동의 분포")
-
 
 str(spec$quantile)
 spec$quantile <- as.factor(spec$quantile)
@@ -51,3 +51,27 @@ ggplot(data = spec, aes(x = sales, y = skill)) + geom_point() + stat_smooth() + 
 
 
 spec.lm <- lm(sales ~ achieve + language + activity + skill, data = spec)
+step(spec.lm, direction = "backward")
+start.lm <- lm(sales~1, data = spec)
+step(start.lm, scope = list(lower = start.lm, upper = spec.lm), direction = "both")
+
+summary(spec.lm)
+summary(lm(sales ~ achieve + activity, data = spec))
+
+
+# industry 와의 상관 관계
+head(sort(table(spec$industry), decreasing = T), 30)
+ind30_name <- names(head(sort(table(spec$industry), decreasing = T), 10))
+ind30_name
+spec_ind <- spec %>% filter(spec$industry %in% ind30_name)
+table(spec_ind$industry, spec_ind$quantile)
+
+summary(lm(sales ~ achieve + language + activity + skill, data = spec_ind))
+
+
+# spec_index
+range(spec$spec_index)
+summary(spec$spec_index)
+summary(lm(spec_index ~ achieve + language + activity + skill, data = spec))
+
+
