@@ -46,8 +46,24 @@ ggplot(data = spec, aes(x = 매출액, y = activity, fill = 매출액)) + geom_b
   theme(axis.title = element_text(size = 15), title = element_text(size = 20))
 ggsave(filename = "activity.png")
 
+# 분산 분석
+
+# 정규성 검정 (qq plot, 샤피로 윌크 검정)
+qqnorm(spec$spec_index)
+qqline(spec$spec_index, col = 2)
+shapiro.test(spec$spec_index)
+
+
+# 등분산 검정
+# install.packages("lawstat")
+library(lawstat)
+levene.test(spec$spec_index, spec$quantile)
+
+# ANOVA
 str(spec$quantile)
 spec$quantile <- as.factor(spec$quantile)
+
+oneway.test(spec_index ~ quantile, data=spec, var.equal=FALSE)
 
 summary(aov(achieve ~ quantile, data = spec))
 summary(aov(language ~ quantile, data = spec))
@@ -55,11 +71,18 @@ summary(aov(skill ~ quantile, data = spec))
 summary(aov(activity ~ quantile, data = spec))
 summary(aov(spec_index ~ quantile, data = spec))
 
+# 사후 검정
+install.packages("agricolae")
+library(agricolae)
+spec_aov <- aov(spec_index ~ quantile, data = spec)
+my_bf <- LSD.test(spec_aov, "quantile", p.adj="bonferroni", group=F)
+my_bf
+
 
 # radar chart
-spec_3q <- spec %>% filter(quantile == "3q") %>% select("spec_index", "achieve", "language", "skill", "activity") 
-spec_2q <- spec %>% filter(quantile == "2q") %>% select("spec_index", "achieve", "language", "skill", "activity")
-spec_1q <- spec %>% filter(quantile == "1q") %>% select("spec_index", "achieve", "language", "skill", "activity")
+spec_3q <- spec %>% filter(quantile == "q3") %>% select("spec_index", "achieve", "language", "skill", "activity") 
+spec_2q <- spec %>% filter(quantile == "q2") %>% select("spec_index", "achieve", "language", "skill", "activity")
+spec_1q <- spec %>% filter(quantile == "q1") %>% select("spec_index", "achieve", "language", "skill", "activity")
 
 q3 <- c(mean(spec_3q$spec_index), mean(spec_3q$achieve), mean(spec_3q$language),
         mean(spec_3q$skill), mean(spec_3q$activity))
@@ -94,6 +117,11 @@ radarchart(q1_df,
            axistype = 2,                   # 축의 레이블 타입
            seg = 4,                        # 축의 눈금 분할                         
            axislabcol = 'black',         # 축의 레이블 색
+           vlabels = c(paste0("스펙지수", "(",round(q1_df$스펙지수[3], 1), ")"),
+                       paste0("학업성취도", "(", round(q1_df$학업성취도[3], 1), ")"),
+                       paste0("외국어", "(", round(q1_df$외국어[3], 1), ")"),
+                       paste0("전문능력", "(", round(q1_df$전문능력[3], 1), ")"),
+                       paste0("대외활동", "(", round(q1_df$대외활동[3], 1), ")")),
            vlcex = 1.1,
            title = "매출액 500억 미만")
 
@@ -107,6 +135,11 @@ radarchart(q2_df,
            axistype=2,                   # 축의 레이블 타입
            seg = 4,                        # 축의 눈금 분할                         
            axislabcol = 'black',            # 축의 레이블 색
+           vlabels = c(paste0("스펙지수", "(",round(q2_df$스펙지수[3], 1), ")"),
+                       paste0("학업성취도", "(", round(q2_df$학업성취도[3], 1), ")"),
+                       paste0("외국어", "(", round(q2_df$외국어[3], 1), ")"),
+                       paste0("전문능력", "(", round(q2_df$전문능력[3], 1), ")"),
+                       paste0("대외활동", "(", round(q2_df$대외활동[3], 1), ")")),
            vlcex = 1.1,
            title = "매출액 1500억 이상 5000억 미만",)
 
@@ -120,6 +153,11 @@ radarchart(q3_df,
            axistype=2,                   # 축의 레이블 타입
            seg = 4,                        # 축의 눈금 분할                         
            axislabcol = 'black',            # 축의 레이블 색
+           vlabels = c(paste0("스펙지수", "(",round(q3_df$스펙지수[3], 1), ")"),
+                       paste0("학업성취도", "(", round(q3_df$학업성취도[3], 1), ")"),
+                       paste0("외국어", "(", round(q3_df$외국어[3], 1), ")"),
+                       paste0("전문능력", "(", round(q3_df$전문능력[3], 1), ")"),
+                       paste0("대외활동", "(", round(q3_df$대외활동[3], 1), ")")),
            vlcex = 1.1,
            title = "매출액 5000억 이상",)
 ?radarchart
