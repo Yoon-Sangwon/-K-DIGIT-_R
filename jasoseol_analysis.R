@@ -89,4 +89,26 @@ jasoseol2$Q5 <- gsub("[[:digit:]]|[A-z]", "", jasoseol2$Q5)
 
 jasoseol2$Q1[2]
 
+# Q1 ~ Q5 까지를 병합
+View(jasoseol1)
+jasoseol1_total <- rbind(jasoseol1$Q1, jasoseol1$Q2, jasoseol1$Q3, jasoseol1$Q4, jasoseol1$Q5)
+jasoseol1_total <- jasoseol1_total[!is.na(jasoseol1_total)]
+length(jasoseol1_total)
+
+jasoseol2_total <- rbind(jasoseol2$Q1, jasoseol2$Q2, jasoseol2$Q3, jasoseol2$Q4, jasoseol2$Q5)
+jasoseol2_total <- jasoseol2_total[!is.na(jasoseol2_total)]
+length(jasoseol2_total)
+
+library(KoNLP)
+jasoseol1_noun <- extractNoun(jasoseol1_total)
+jasoseol1_noun <- unlist(jasoseol1_noun)
+jasoseol1_noun <- Filter(function(x) {(nchar(x) > 1)}, jasoseol1_noun)
+jasoseol1_table <- table(jasoseol1_noun)
+head(sort(jasoseol1_table, decreasing = T), 30)
+
+jasoseol2_noun <- extractNoun(jasoseol2_total)
+jasoseol2_noun <- unlist(jasoseol2_noun)
+jasoseol2_noun <- Filter(function(x) {(nchar(x) > 1)}, jasoseol2_noun)
+jasoseol2_table <- table(jasoseol2_noun)
+head(sort(jasoseol2_table, decreasing = T), 30)
 
