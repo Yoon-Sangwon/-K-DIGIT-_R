@@ -118,10 +118,38 @@ jasoseol2_df <- data.frame(jasoseol2_table)
 
 # 워드클라우드 생성
 library(wordcloud)
-jasoseol1_wc <- wordcloud2(data = jasoseol1_df, shape = 'diamond')
-jasoseol2_wc <- wordcloud2(data = jasoseol2_df, shape = 'diamond')
+library(wordcloud2)
+jasoseol1_wc <- wordcloud2(data = jasoseol1_df)
+jasoseol2_wc <- wordcloud2(data = jasoseol2_df)
 
 htmltools::save_html(jasoseol1_wc,"jasoseol1.html")
 htmltools::save_html(jasoseol2_wc,"jasoseol2.html")
 
 
+# 유사도 분석
+library(tm)
+library(proxy)
+
+length(jasoseol1_noun)
+
+doc1 <- NULL
+for (i in 1:67532) {
+  doc1 <- paste(doc1, jasoseol1_noun[j],sep = " ")
+}
+
+length(jasoseol2_noun)
+
+doc2 <- NULL
+for (j in 1:128683) {
+  doc2 <- paste(doc2, jasoseol2_noun[j], sep = " ")
+}
+
+
+jas <- c(doc1, doc2)
+cps <- VCorpus(VectorSource(jas))
+tdm <- TermDocumentMatrix(cps)
+tdm
+(m <- as.matrix(tdm))
+com <- m %*% t(m)
+com
+result <- dist(com, method = "Euclidean")
