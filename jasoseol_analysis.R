@@ -112,3 +112,16 @@ jasoseol2_noun <- Filter(function(x) {(nchar(x) > 1)}, jasoseol2_noun)
 jasoseol2_table <- table(jasoseol2_noun)
 head(sort(jasoseol2_table, decreasing = T), 30)
 
+# 워드클라우드를 위한 DF 변환
+jasoseol1_df <- data.frame(jasoseol1_table)
+jasoseol2_df <- data.frame(jasoseol2_table)
+
+# 워드클라우드 생성
+library(wordcloud)
+jasoseol1_wc <- wordcloud2(data = jasoseol1_df, shape = 'diamond')
+jasoseol2_wc <- wordcloud2(data = jasoseol2_df, shape = 'diamond')
+
+htmltools::save_html(jasoseol1_wc,"jasoseol1.html")
+htmltools::save_html(jasoseol2_wc,"jasoseol2.html")
+
+
